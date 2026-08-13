@@ -60,6 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao']) && $_POST['ac
                 }
             } else {
                 $erro = $response['message'] ?? 'Credenciais inválidas.';
+                if (isset($response['raw_response'])) {
+                    // Limita a exibição da resposta bruta a 250 caracteres
+                    $erro .= ' [Bruto: ' . htmlspecialchars(substr($response['raw_response'], 0, 250)) . '...]';
+                }
             }
         } catch (Exception $e) {
             $erro = 'Não foi possível conectar ao servidor. Verifique a API e tente novamente.';
