@@ -55,6 +55,7 @@ class ApiService {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15); // Timeout de 15 segundos
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Evita problemas de SSL em localhost/Render de teste
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
 
         if ($data !== null && in_array(strtoupper($method), ['POST', 'PUT', 'PATCH'], true)) {
             $jsonData = json_encode($data);
