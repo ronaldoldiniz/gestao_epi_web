@@ -289,7 +289,7 @@ $podeGerenciarPin = in_array($userProfile, ['ADMINISTRADOR', 'RH_ADMINISTRATIVO'
                                 <?php
                                 $cpf = $func['fun_cpf'];
                                 if (strlen($cpf) === 11) {
-                                    $cpf = substr($cpf, 0, 3) . '.' . substr($cpf, 3, 3) . '.' . substr($cpf, 6, 3) . '-' . substr($cpf, 9, 2);
+                                    $cpf = substr($cpf, 0, 3) . '.***.***-' . substr($cpf, 9, 2);
                                 }
                                 $statusPin = $func['assinatura_status'] ?? 'PENDENTE';
                                 $statusPinClass = strtolower(str_replace(' ', '-', $statusPin));
@@ -801,6 +801,26 @@ function confirmarExclusao(id, nome) {
 }
 
 /**
+ * Mascara o CPF conforme as diretrizes da LGPD (exibe apenas os 3 primeiros e os 2 últimos dígitos)
+ */
+function mascararCPF(cpf) {
+    if (!cpf) return '';
+    const limpo = cpf.replace(/\D/g, '');
+    if (limpo.length !== 11) return cpf;
+    return limpo.substring(0, 3) + '.***.***-' + limpo.substring(9, 11);
+}
+
+/**
+ * Mascara o código do eSocial conforme as diretrizes da LGPD (exibe as 3 primeiras letras e as 2 últimas)
+ */
+function mascararESocial(esocial) {
+    if (!esocial) return '';
+    const len = esocial.length;
+    if (len <= 5) return '*****';
+    return esocial.substring(0, 3) + '*****' + esocial.substring(len - 2);
+}
+
+/**
  * Puxa os dados consolidados do funcionário de forma assíncrona da API (AJAX)
  */
 function verDetalhes(funId) {
@@ -836,8 +856,8 @@ function verDetalhes(funId) {
                 const f = res.data;
                 document.getElementById('det-nome').innerText = f.fun_nome;
                 document.getElementById('det-iniciais').innerText = f.fun_nome.split(' ').slice(0,2).map(n => n[0]).join('').toUpperCase();
-                document.getElementById('det-cpf').innerText = formatCPF(f.fun_cpf);
-                document.getElementById('det-esocial').innerText = f.fun_esocial;
+                document.getElementById('det-cpf').innerText = mascararCPF(f.fun_cpf);
+                document.getElementById('det-esocial').innerText = mascararESocial(f.fun_esocial);
                 document.getElementById('det-setor').innerText = f.fun_departamento;
                 document.getElementById('det-cargo').innerText = f.fun_cargo;
                 
