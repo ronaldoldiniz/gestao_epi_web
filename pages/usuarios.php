@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         $senha = $_POST['senha'] ?? '';
         $confSenha = $_POST['confirmar_senha'] ?? '';
         $perfil = $_POST['usu_perfil'] ?? '';
-        $situacao = $_POST['usu_situacao'] ?? 'ATIVO';
+        $status = $_POST['usu_status'] ?? 'ATIVO';
 
         if ($senha !== $confSenha) {
             $erro = 'A confirmação de senha não coincide.';
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
                     'senha' => $senha,
                     'confirmar_senha' => $confSenha,
                     'usu_perfil' => $perfil,
-                    'usu_situacao' => $situacao
+                    'usu_status' => $status
                 ]);
 
                 if (isset($response['success']) && $response['success']) {
@@ -56,13 +56,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         $id = (int)($_POST['usu_id'] ?? 0);
         $login = trim($_POST['usu_login'] ?? '');
         $perfil = $_POST['usu_perfil'] ?? '';
-        $situacao = $_POST['usu_situacao'] ?? 'ATIVO';
+        $status = $_POST['usu_status'] ?? 'ATIVO';
 
         try {
             $response = $api->put("usuarios/{$id}", [
                 'usu_login' => $login,
                 'usu_perfil' => $perfil,
-                'usu_situacao' => $situacao
+                'usu_status' => $status
             ]);
 
             if (isset($response['success']) && $response['success']) {
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['acao'])) {
         } else {
             try {
                 $response = $api->post("usuarios/{$id}/redefinir-senha", [
-                    'nova_senha' => $novaSenha,
+                    'senha_temporaria' => $novaSenha,
                     'confirmar_senha' => $confSenha
                 ]);
 
@@ -214,14 +214,14 @@ $perfisMap = [
                         <?php else: ?>
                             <?php foreach ($usuarios as $usu): ?>
                                 <?php
-                                $situClass = strtolower($usu['usu_situacao']);
+                                $situClass = strtolower($usu['usu_status'] ?? 'ativo');
                                 $perfilLabel = $perfisMap[$usu['usu_perfil']] ?? $usu['usu_perfil'];
                                 $ultimaConexao = !empty($usu['usu_ultimo_login']) ? date('d/m/Y H:i', strtotime($usu['usu_ultimo_login'])) : 'Nunca conectado';
                                 ?>
                                 <tr class="usu-row" 
                                     data-login="<?= htmlspecialchars(strtolower($usu['usu_login'])) ?>"
                                     data-perfil="<?= htmlspecialchars($usu['usu_perfil']) ?>"
-                                    data-status="<?= htmlspecialchars($usu['usu_situacao']) ?>">
+                                    data-status="<?= htmlspecialchars($usu['usu_status'] ?? 'ATIVO') ?>">
                                     
                                     <td class="fw-semibold">
                                         <div class="d-flex align-items-center gap-2">
@@ -234,7 +234,7 @@ $perfisMap = [
                                     <td><?= htmlspecialchars($perfilLabel) ?></td>
                                     <td class="text-muted"><?= $ultimaConexao ?></td>
                                     <td>
-                                        <span class="status-badge <?= $situClass ?>"><?= htmlspecialchars($usu['usu_situacao']) ?></span>
+                                        <span class="status-badge <?= $situClass ?>"><?= htmlspecialchars($usu['usu_status'] ?? 'ATIVO') ?></span>
                                     </td>
                                     <td class="text-end">
                                         <div class="d-inline-flex gap-2">
@@ -246,7 +246,7 @@ $perfisMap = [
                                                 <i class="bi bi-key"></i>
                                             </button>
                                             
-                                            <?php if ($usu['usu_situacao'] === 'ATIVO'): ?>
+                                            <?php if (($usu['usu_status'] ?? 'ATIVO') === 'ATIVO'): ?>
                                                 <button class="btn btn-sm btn-light border text-danger py-1 px-2" onclick="confirmarExclusao(<?= $usu['usu_id'] ?>, '<?= htmlspecialchars($usu['usu_login']) ?>')" title="Inativar Operador">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
@@ -297,12 +297,12 @@ $perfisMap = [
                         </select>
                     </div>
                     <div class="col-6 mb-3">
-                        <label class="form-label">Situação</label>
-                        <select class="form-select" name="usu_situacao">
-                            <option value="ATIVO">Ativo</option>
-                            <option value="BLOQUEADO">Bloqueado</option>
-                        </select>
-                    </div>
+                                        <label class="form-label">Situação</label>
+                                        <select class="form-select" name="usu_status">
+                                            <option value="ATIVO">Ativo</option>
+                                            <option value="BLOQUEADO">Bloqueado</option>
+                                        </select>
+                                    </div>
                 </div>
                 <small class="text-muted">* Campos obrigatórios</small>
             </div>
@@ -340,7 +340,7 @@ $perfisMap = [
                     </div>
                     <div class="col-6 mb-3">
                         <label class="form-label">Situação *</label>
-                        <select class="form-select" id="edit-usu-situacao" name="usu_situacao" required>
+                        <select class="form-select" id="edit-usu-status" name="usu_status" required>
                             <option value="ATIVO">Ativo</option>
                             <option value="INATIVO">Inativo</option>
                             <option value="BLOQUEADO">Bloqueado</option>
@@ -465,7 +465,7 @@ function prepararEdicao(usu) {
     document.getElementById('edit-usu-id').value = usu.usu_id;
     document.getElementById('edit-usu-login').value = usu.usu_login;
     document.getElementById('edit-usu-perfil').value = usu.usu_perfil;
-    document.getElementById('edit-usu-situacao').value = usu.usu_situacao;
+    document.getElementById('edit-usu-status').value = usu.usu_status || 'ATIVO';
     
     new bootstrap.Modal(document.getElementById('modalEditar')).show();
 }
