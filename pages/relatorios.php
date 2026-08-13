@@ -176,6 +176,7 @@ let relatorioAtivo = 'entregas';
 let dadosAtivos = []; // Cache dos dados carregados
 let colunasAtivas = []; // Nomes das colunas para exportação
 let filtrosAtivosString = '';
+let nomeFuncionarioFiltrado = ''; // Nome do colaborador quando filtrado individualmente
 
 document.addEventListener('DOMContentLoaded', function() {
     // Inicialização comum
@@ -222,8 +223,10 @@ function gerarRelatorioEntregas() {
             let listaEntregas = [];
             if (Array.isArray(res.data)) {
                 listaEntregas = res.data;
+                nomeFuncionarioFiltrado = '';
             } else if (res.data && Array.isArray(res.data.entregas)) {
                 listaEntregas = res.data.entregas;
+                nomeFuncionarioFiltrado = res.data.funcionario ? res.data.funcionario.fun_nome : '';
             }
 
             dadosAtivos = listaEntregas;
@@ -252,7 +255,7 @@ function gerarRelatorioEntregas() {
                     html += `
                         <tr>
                             <td>${dataFormat}</td>
-                            <td class="fw-semibold">${row.fun_nome || 'Não Informado'}</td>
+                            <td class="fw-semibold">${row.fun_nome || nomeFuncionarioFiltrado || 'Não Informado'}</td>
                             <td class="fw-semibold">${item.item_epi_nome_snapshot || item.epi_nome || 'EPI'}</td>
                             <td>${item.item_epi_ca_snapshot || item.epi_ca || '---'}</td>
                             <td>${item.item_quantidade || 1}</td>
@@ -472,7 +475,7 @@ function exportarCSV() {
             itens.forEach(item => {
                 const linha = [
                     new Date(row.entr_data_entrega).toLocaleDateString('pt-BR'),
-                    row.fun_nome || 'Não Informado',
+                    row.fun_nome || nomeFuncionarioFiltrado || 'Não Informado',
                     item.item_epi_nome_snapshot || item.epi_nome || 'EPI',
                     item.item_epi_ca_snapshot || item.epi_ca || 'Isento',
                     item.item_quantidade || 1,
