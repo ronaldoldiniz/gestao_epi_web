@@ -10,6 +10,13 @@ if (!defined('APP_ROOT')) {
     define('APP_ROOT', $config['app_root_url'] ?? '/gestao_epi-web/');
 }
 
+// Função helper global para formatação de moeda brasileira (R$) sem dependência da extensão 'intl'
+if (!function_exists('formatarValorMonetario')) {
+    function formatarValorMonetario(float $valor): string {
+        return 'R$ ' . number_format($valor, 2, ',', '.');
+    }
+}
+
 // 1. Validação de Sessão Geral
 if (!isset($_SESSION['token']) || $_SESSION['token'] === '' || !isset($_SESSION['usuario'])) {
     $_SESSION['error_message'] = 'Por favor, realize o login para acessar o sistema.';

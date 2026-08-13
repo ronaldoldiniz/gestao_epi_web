@@ -171,8 +171,6 @@ try {
 $podeEditar = in_array($userProfile, ['ADMINISTRADOR', 'TECNICO_SST'], true);
 $podeExcluir = in_array($userProfile, ['ADMINISTRADOR', 'TECNICO_SST'], true);
 $podeVerCustos = in_array($userProfile, ['ADMINISTRADOR', 'GESTOR'], true);
-
-$moedaFormatter = numfmt_create("pt_BR", \NumberFormatter::CURRENCY);
 ?>
 
 <div id="main-content">
@@ -315,7 +313,7 @@ $moedaFormatter = numfmt_create("pt_BR", \NumberFormatter::CURRENCY);
                                     </td>
                                     <td class="text-muted"><?= htmlspecialchars($vidaUtil) ?></td>
                                     <?php if ($podeVerCustos): ?>
-                                        <td class="fw-bold text-success"><?= numfmt_format_currency($moedaFormatter, (float)$epi['epi_valor'], 'BRL') ?></td>
+                                        <td class="fw-bold text-success"><?= formatarValorMonetario((float)$epi['epi_valor']) ?></td>
                                     <?php endif; ?>
                                     <td>
                                         <span class="status-badge <?= strtolower($epi['epi_status']) ?>"><?= htmlspecialchars($epi['epi_status']) ?></span>

@@ -49,8 +49,6 @@ try {
 } catch (Exception $e) {
     $erroApi = 'Não foi possível carregar os dados consolidados do painel: ' . $e->getMessage();
 }
-
-$moedaFormatter = numfmt_create("pt_BR", \NumberFormatter::CURRENCY);
 ?>
 
 <div id="main-content">
@@ -122,14 +120,14 @@ $moedaFormatter = numfmt_create("pt_BR", \NumberFormatter::CURRENCY);
                     <div class="col-md-4 border-end border-slate">
                         <div class="p-2 text-center text-md-start">
                             <span class="text-muted d-block mb-1" style="font-size: 13px; text-transform: uppercase;">Custo Total Acumulado</span>
-                            <h2 class="fw-bold text-success m-0"><?= isset($custos['custo_total_acumulado']) ? numfmt_format_currency($moedaFormatter, $custos['custo_total_acumulado'], 'BRL') : 'R$ 0,00' ?></h2>
+                            <h2 class="fw-bold text-success m-0"><?= isset($custos['custo_total_acumulado']) ? formatarValorMonetario((float)$custos['custo_total_acumulado']) : 'R$ 0,00' ?></h2>
                             <small class="text-muted">Soma histórica de EPIs finalizados e assinados</small>
                         </div>
                     </div>
                     <div class="col-md-4 border-end border-slate">
                         <div class="p-2 text-center text-md-start">
                             <span class="text-muted d-block mb-1" style="font-size: 13px; text-transform: uppercase;">Custo Médio por Item</span>
-                            <h2 class="fw-bold text-primary m-0"><?= isset($custos['custo_medio_por_item']) ? numfmt_format_currency($moedaFormatter, $custos['custo_medio_por_item'], 'BRL') : 'R$ 0,00' ?></h2>
+                            <h2 class="fw-bold text-primary m-0"><?= isset($custos['custo_medio_por_item']) ? formatarValorMonetario((float)$custos['custo_medio_por_item']) : 'R$ 0,00' ?></h2>
                             <small class="text-muted">Média ponderada baseada no snapshot de preços</small>
                         </div>
                     </div>
