@@ -5,6 +5,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Invalida o cache do navegador para que novos deploys reflitam de imediato
+header("Cache-Control: no-cache, no-store, must-revalidate");
+header("Pragma: no-cache");
+header("Expires: 0");
+
 $config = require __DIR__ . '/../config/api.php';
 if (!defined('APP_ROOT')) {
     define('APP_ROOT', $config['app_root_url'] ?? '/gestao_epi-web/');
