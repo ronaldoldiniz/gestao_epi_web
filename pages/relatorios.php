@@ -240,17 +240,20 @@ function gerarRelatorioEntregas() {
 
             res.data.forEach(row => {
                 const dataFormat = new Date(row.entr_data_entrega).toLocaleDateString('pt-BR');
-                html += `
-                    <tr>
-                        <td>${dataFormat}</td>
-                        <td class="fw-semibold">${row.fun_nome}</td>
-                        <td class="fw-semibold">${row.item_epi_nome_snapshot || 'EPI'}</td>
-                        <td>${row.item_epi_ca_snapshot || '---'}</td>
-                        <td>${row.item_quantidade}</td>
-                        <td><span class="badge bg-light text-dark border">${row.entr_motivo}</span></td>
-                        <td class="text-muted">${row.usu_login}</td>
-                    </tr>
-                `;
+                const itens = row.itens || [];
+                itens.forEach(item => {
+                    html += `
+                        <tr>
+                            <td>${dataFormat}</td>
+                            <td class="fw-semibold">${row.fun_nome || 'Não Informado'}</td>
+                            <td class="fw-semibold">${item.item_epi_nome_snapshot || item.epi_nome || 'EPI'}</td>
+                            <td>${item.item_epi_ca_snapshot || item.epi_ca || '---'}</td>
+                            <td>${item.item_quantidade || 1}</td>
+                            <td><span class="badge bg-light text-dark border">${row.entr_motivo}</span></td>
+                            <td class="text-muted">${row.usu_login}</td>
+                        </tr>
+                    `;
+                });
             });
 
             html += '</tbody></table>';
@@ -459,48 +462,53 @@ function exportarCSV() {
     
     // 2. Linhas dependendo do tipo de relatório ativo
     dadosAtivos.forEach(row => {
-        let linha = [];
         if (relatorioAtivo === 'entregas') {
-            linha = [
-                new Date(row.entr_data_entrega).toLocaleDateString('pt-BR'),
-                row.fun_nome,
-                row.item_epi_nome_snapshot,
-                row.item_epi_ca_snapshot || 'Isento',
-                row.item_quantidade,
-                row.entr_motivo,
-                row.usu_login
-            ];
-        } else if (relatorioAtivo === 'epis-vencidos') {
-            linha = [
-                row.fun_nome,
-                row.epi_nome,
-                row.epi_ca || 'Isento',
-                new Date(row.data_entrega).toLocaleDateString('pt-BR'),
-                row.dias_em_uso,
-                row.validade_uso_dias,
-                'VENCIDO'
-            ];
-        } else if (relatorioAtivo === 'ca-vencidos') {
-            linha = [
-                row.epi_nome,
-                row.epi_fabricante,
-                row.epi_ca,
-                new Date(row.epi_vencimento_ca).toLocaleDateString('pt-BR'),
-                row.epi_valor.toString().replace('.', ','),
-                row.epi_status
-            ];
-        } else if (relatorioAtivo === 'custos') {
-            linha = [
-                row.ano_mes,
-                row.fun_departamento,
-                row.total_unidades,
-                row.custo_total.toString().replace('.', ',')
-            ];
+            const itens = row.itens || [];
+            itens.forEach(item => {
+                const linha = [
+                    new Date(row.entr_data_entrega).toLocaleDateString('pt-BR'),
+                    row.fun_nome || 'Não Informado',
+                    item.item_epi_nome_snapshot || item.epi_nome || 'EPI',
+                    item.item_epi_ca_snapshot || item.epi_ca || 'Isento',
+                    item.item_quantidade || 1,
+                    row.entr_motivo,
+                    row.usu_login
+                ];
+                const linhaSanit = linha.map(v => `"${(v || '').toString().replace(/"/g, '""')}"`);
+                csvContent += linhaSanit.join(";") + "\n";
+            });
+        } else {
+            let linha = [];
+            if (relatorioAtivo === 'epis-vencidos') {
+                linha = [
+                    row.fun_nome,
+                    row.epi_nome,
+                    row.epi_ca || 'Isento',
+                    new Date(row.data_entrega).toLocaleDateString('pt-BR'),
+                    row.dias_em_uso,
+                    row.validade_uso_dias,
+                    'VENCIDO'
+                ];
+            } else if (relatorioAtivo === 'ca-vencidos') {
+                linha = [
+                    row.epi_nome,
+                    row.epi_fabricante,
+                    row.epi_ca,
+                    new Date(row.epi_vencimento_ca).toLocaleDateString('pt-BR'),
+                    row.epi_valor.toString().replace('.', ','),
+                    row.epi_status
+                ];
+            } else if (relatorioAtivo === 'custos') {
+                linha = [
+                    row.ano_mes,
+                    row.fun_departamento,
+                    row.total_unidades,
+                    row.custo_total.toString().replace('.', ',')
+                ];
+            }
+            const linhaSanit = linha.map(v => `"${(v || '').toString().replace(/"/g, '""')}"`);
+            csvContent += linhaSanit.join(";") + "\n";
         }
-        
-        // Trata ponto e vírgula e sanitização simples
-        const linhaSanit = linha.map(v => `"${(v || '').toString().replace(/"/g, '""')}"`);
-        csvContent += linhaSanit.join(";") + "\n";
     });
 
     // Dispara download
