@@ -1,0 +1,2057 @@
+Atue como um **Arquiteto de Software e Desenvolvedor Full Stack Sênior**, com experiência em PHP, MySQL, APIs REST, aplicações Web responsivas, integração com Android e sistemas corporativos.
+
+Preciso que você analise o conjunto existente do projeto **Gestão_EPI** e desenvolva uma nova aplicação equivalente para **WEB-PHP**, mantendo compatibilidade com a arquitetura já existente.
+
+# 1. CAMINHOS DOS PROJETOS EXISTENTES
+
+Analise integralmente os seguintes projetos locais:
+
+## Aplicativo Android
+
+```text
+C:\Users\Ronaldo\Documents\Antigravity\gestao_epi_5
+```
+
+## API / Backend PHP
+
+```text
+C:\xampp\htdocs\gestao_epi_api_5
+```
+
+## Banco de Dados MySQL do XAMPP
+
+```text
+C:\xampp\mysql\data\db_gestao_epi
+```
+
+## Nova aplicação WEB-PHP
+
+A nova aplicação deverá ser criada exclusivamente em:
+
+```text
+C:\xampp\htdocs\gestao_epi-web
+```
+
+Essa pasta já foi criada para receber o projeto.
+
+---
+
+# 2. REGRA CRÍTICA
+
+NÃO ALTERAR os seguintes projetos:
+
+```text
+C:\Users\Ronaldo\Documents\Antigravity\gestao_epi_5
+```
+
+```text
+C:\xampp\htdocs\gestao_epi_api_5
+```
+
+```text
+C:\xampp\mysql\data\db_gestao_epi
+```
+
+Esses três projetos deverão ser tratados como:
+
+```text
+SOMENTE LEITURA
+```
+
+Você pode:
+
+* analisar;
+* ler arquivos;
+* identificar endpoints;
+* identificar tabelas;
+* entender regras de negócio;
+* entender autenticação;
+* entender permissões;
+* analisar identidade visual;
+* analisar fluxos.
+
+Mas NÃO poderá:
+
+* editar arquivos;
+* alterar código;
+* alterar tabelas;
+* adicionar colunas;
+* excluir informações;
+* modificar endpoints;
+* mudar regras de negócio;
+* executar migrações;
+* alterar dados existentes;
+* renomear arquivos;
+* reorganizar os projetos.
+
+Toda criação deverá ocorrer somente em:
+
+```text
+C:\xampp\htdocs\gestao_epi-web
+```
+
+---
+
+# 3. OBJETIVO
+
+Criar uma aplicação **WEB-PHP completa e funcional** para o sistema Gestão_EPI, equivalente às funções administrativas e gerenciais previstas no projeto existente.
+
+A aplicação Web deverá trabalhar em paralelo com o aplicativo Android.
+
+A arquitetura deverá ser:
+
+```text
+                USUÁRIOS
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+        ▼                     ▼
+     ANDROID               WEB PHP
+        │                     │
+        └──────────┬──────────┘
+                   │
+                   ▼
+                API PHP
+                   │
+                   ▼
+                MYSQL
+```
+
+Utilizes as Skills na pasta .agents do projeto para desenvolvimento.
+
+Android e Web deverão utilizar:
+
+* a mesma API;
+* o mesmo banco;
+* as mesmas regras de negócio;
+* os mesmos usuários;
+* os mesmos funcionários;
+* os mesmos EPIs;
+* as mesmas entregas;
+* os mesmos logs;
+* os mesmos dados de auditoria.
+
+---
+
+# 4. IMPORTANTE SOBRE O ACESSO AO BANCO
+
+A aplicação Web NÃO deverá implementar uma nova lógica independente de negócio diretamente no MySQL se a API já oferecer o endpoint correspondente.
+
+Prioridade obrigatória:
+
+```text
+WEB
+ ↓
+API
+ ↓
+MYSQL
+```
+
+Evitar:
+
+```text
+WEB
+ ↓
+MYSQL DIRETO
+```
+
+sempre que a API já possuir a operação.
+
+O banco deverá continuar centralizado atrás da API.
+
+Caso alguma funcionalidade necessária para o Web não possua endpoint correspondente:
+
+1. NÃO alterar a API existente;
+2. identificar a limitação;
+3. documentar claramente a necessidade;
+4. implementar somente o que for possível sem alterar os projetos existentes;
+5. criar uma lista de endpoints faltantes para posterior decisão.
+
+Não criar uma segunda regra de negócio conflitante.
+
+---
+
+# 5. PRIMEIRA ETAPA — ANÁLISE OBRIGATÓRIA
+
+ANTES DE DESENVOLVER QUALQUER ARQUIVO DO WEB:
+
+realize uma análise completa dos três projetos existentes.
+
+## 5.1 Android
+
+No projeto:
+
+```text
+C:\Users\Ronaldo\Documents\Antigravity\gestao_epi_5
+```
+
+analise:
+
+* estrutura de pastas;
+* Activities;
+* Fragments;
+* telas;
+* layouts XML;
+* ViewModels;
+* Models;
+* Repositories;
+* Retrofit;
+* interfaces da API;
+* DTOs;
+* autenticação;
+* controle de sessão;
+* perfis de usuário;
+* permissões;
+* telas de funcionários;
+* telas de EPIs;
+* telas de entregas;
+* devoluções;
+* relatórios;
+* dashboard;
+* configurações;
+* auditoria;
+* histórico de preços;
+* assinatura eletrônica;
+* QR Code;
+* mensagens;
+* estados;
+* regras de validação.
+
+---
+
+# 6. IDENTIDADE VISUAL
+
+Analise integralmente a identidade visual existente no Android.
+
+A aplicação Web deverá utilizar a mesma linguagem visual.
+
+Preservar:
+
+* azul institucional;
+* tipografia;
+* hierarquia visual;
+* cores de status;
+* ícones equivalentes;
+* espaçamentos;
+* estilo dos cards;
+* estilo dos botões;
+* alertas;
+* tabelas;
+* mensagens;
+* padrões de validação;
+* Light Mode;
+* Dark Mode, quando existente.
+
+A cor institucional definida para o projeto é:
+
+```text
+#305BD3
+```
+
+Utilizar essa cor como principal na versão Web.
+
+A aplicação Web deverá parecer uma extensão natural do aplicativo Android.
+
+Não criar uma identidade visual diferente.
+
+---
+
+# 7. NÃO COPIAR O LAYOUT MOBILE LITERALMENTE
+
+A aplicação Web deve manter a identidade visual, mas adaptar a experiência para desktop.
+
+Não criar simplesmente:
+
+```text
+uma tela de celular ampliada.
+```
+
+Utilizar padrões adequados ao ambiente Web.
+
+Exemplo:
+
+```text
+Desktop:
+Sidebar
+Topbar
+Cards
+Tabelas
+Modais
+Filtros
+Dashboard amplo
+```
+
+Mobile Web:
+
+```text
+Layout responsivo
+Menu recolhível
+Cards reorganizados
+Tabelas adaptadas
+```
+
+---
+
+# 8. API EXISTENTE
+
+Analise integralmente:
+
+```text
+C:\xampp\htdocs\gestao_epi_api_5
+```
+
+Identifique:
+
+* URL base;
+* estrutura das rotas;
+* endpoints;
+* métodos HTTP;
+* autenticação;
+* token;
+* headers;
+* parâmetros;
+* bodies JSON;
+* respostas JSON;
+* códigos HTTP;
+* tratamento de erros;
+* paginação;
+* filtros;
+* regras de validação.
+
+Crie um mapa semelhante a:
+
+```text
+ENDPOINT
+MÉTODO
+FINALIDADE
+PARÂMETROS
+RESPOSTA
+PERFIL AUTORIZADO
+TELA WEB QUE UTILIZARÁ
+```
+
+---
+
+# 9. BANCO EXISTENTE
+
+Analise o banco:
+
+```text
+C:\xampp\mysql\data\db_gestao_epi
+```
+
+Somente para compreender a estrutura.
+
+Identifique:
+
+* tabelas;
+* colunas;
+* PK;
+* FK;
+* relacionamentos;
+* views;
+* índices;
+* estados;
+* ENUMs;
+* dados de auditoria;
+* estruturas de assinatura;
+* histórico de preços;
+* entregas;
+* itens;
+* usuários;
+* funcionários;
+* EPIs.
+
+NÃO modificar a estrutura.
+
+---
+
+# 10. PRINCIPAIS ENTIDADES ESPERADAS
+
+Verifique se existem estruturas equivalentes a:
+
+```text
+Usuarios
+Funcionarios
+EPIs
+Entrega_EPIs
+Itens_Entrega
+Assinaturas_Eletronicas
+Log_Auditoria
+Historico_Preco_EPI
+```
+
+Não assumir nomes.
+
+Utilizar os nomes reais encontrados.
+
+---
+
+# 11. APLICAÇÃO WEB
+
+Criar o projeto em:
+
+```text
+C:\xampp\htdocs\gestao_epi-web
+```
+
+A aplicação deverá rodar em localhost pelo XAMPP.
+
+Exemplo esperado:
+
+```text
+http://localhost/gestao_epi-web/
+```
+
+---
+
+# 12. TECNOLOGIAS
+
+Utilizar:
+
+```text
+PHP
+HTML5
+CSS3
+JavaScript
+Bootstrap ou Tailwind CSS
+```
+
+Preferencialmente utilizar uma estrutura simples e adequada para TCC e manutenção futura.
+
+Evitar frameworks excessivamente complexos se não forem necessários.
+
+A aplicação deverá ser fácil de:
+
+* instalar;
+* entender;
+* manter;
+* demonstrar;
+* publicar futuramente.
+
+---
+
+# 13. ORGANIZAÇÃO DO PROJETO
+
+Criar uma arquitetura organizada.
+
+Exemplo conceitual:
+
+```text
+gestao_epi-web/
+│
+├── index.php
+├── login.php
+│
+├── config/
+│
+├── controllers/
+│
+├── services/
+│
+├── models/
+│
+├── views/
+│
+├── components/
+│
+├── assets/
+│   ├── css/
+│   ├── js/
+│   ├── img/
+│   └── icons/
+│
+├── pages/
+│
+└── README.md
+```
+
+Pode utilizar outra estrutura se for tecnicamente melhor.
+
+Justificar a decisão.
+
+---
+
+# 14. SERVIÇO DE API
+
+Centralizar toda comunicação com a API.
+
+Criar algo equivalente a:
+
+```text
+ApiService.php
+```
+
+ou arquitetura compatível.
+
+Ele deverá cuidar de:
+
+* URL base;
+* headers;
+* autenticação;
+* token;
+* GET;
+* POST;
+* PUT;
+* PATCH;
+* DELETE;
+* tratamento de erros;
+* respostas JSON.
+
+Não espalhar chamadas HTTP diretamente pelas páginas.
+
+---
+
+# 15. AUTENTICAÇÃO
+
+Criar tela de Login equivalente ao Android.
+
+O login Web deverá utilizar os mesmos usuários da API.
+
+Fluxo:
+
+```text
+USUÁRIO
+   ↓
+WEB
+   ↓
+API
+   ↓
+AUTENTICAÇÃO
+   ↓
+TOKEN / SESSÃO
+   ↓
+WEB
+```
+
+Não criar uma tabela de usuários separada para o Web.
+
+---
+
+# 16. SESSÃO
+
+Após login válido:
+
+armazenar de forma segura os dados necessários na sessão PHP.
+
+Exemplo:
+
+```text
+usu_id
+usu_nome
+usu_login
+usu_perfil
+token
+```
+
+Nunca armazenar senha na sessão.
+
+---
+
+# 17. LOGOUT
+
+Criar logout com:
+
+* destruição da sessão;
+* limpeza dos dados locais;
+* redirecionamento para login.
+
+---
+
+# 18. CONTROLE DE ACESSO POR PERFIL
+
+Utilizar a mesma lógica de perfis do sistema existente.
+
+Perfis esperados:
+
+```text
+ADMINISTRADOR
+RH_ADMINISTRATIVO
+TECNICO_SST
+ALMOXARIFE_OPERADOR
+GESTOR
+```
+
+Mas verificar os nomes reais existentes.
+
+A aplicação Web deverá respeitar as permissões da API.
+
+Não mostrar funcionalidades proibidas.
+
+Mesmo assim, a segurança não deverá depender somente de esconder menu.
+
+A API continua sendo a autoridade final.
+
+---
+
+# 19. LAYOUT PRINCIPAL
+
+Após login, criar:
+
+## Sidebar
+
+Com itens disponíveis conforme o perfil.
+
+Sugestão:
+
+```text
+Dashboard
+Funcionários
+EPIs
+Entregas
+Relatórios
+Usuários
+Auditoria
+Configurações
+Logout
+```
+
+Exibir somente módulos autorizados.
+
+---
+
+# 20. TOPBAR
+
+Criar Topbar com:
+
+* nome do sistema;
+* usuário logado;
+* perfil;
+* notificações;
+* alternância Light/Dark Mode;
+* logout.
+
+---
+
+# 21. DASHBOARD
+
+Criar Dashboard gerencial aproveitando os dados existentes.
+
+Indicadores desejados:
+
+* total de funcionários;
+* funcionários ativos;
+* funcionários com senha pendente;
+* EPIs cadastrados;
+* EPIs com CA vencido;
+* EPIs com CA próximo do vencimento;
+* entregas hoje;
+* entregas no mês;
+* devoluções;
+* custo mensal;
+* top EPIs utilizados;
+* distribuição por setor;
+* taxa de conformidade;
+* últimas atividades.
+
+Não inventar cálculos se a API já possuir lógica.
+
+Reutilizar o comportamento do Android.
+
+---
+
+# 22. FUNCIONÁRIOS
+
+Criar módulo administrativo para:
+
+* listar;
+* pesquisar;
+* filtrar;
+* visualizar detalhes;
+* cadastrar;
+* editar;
+* ativar/inativar;
+* visualizar situação;
+* visualizar senha pendente;
+* visualizar histórico de EPIs.
+
+Utilizar as regras do Android/API.
+
+---
+
+# 23. IMPORTAÇÃO DE FUNCIONÁRIOS
+
+Se a API já oferecer suporte:
+
+criar interface para importação:
+
+```text
+CSV
+Excel
+```
+
+Mostrar:
+
+* arquivo selecionado;
+* quantidade de registros;
+* erros;
+* duplicidades;
+* sucesso;
+* falhas por linha.
+
+Se não houver endpoint, não alterar a API.
+
+Documentar como funcionalidade pendente de backend.
+
+---
+
+# 24. EPIs
+
+Criar módulo para:
+
+* listar;
+* pesquisar;
+* cadastrar;
+* editar;
+* ativar/inativar;
+* controlar CA;
+* validade;
+* fabricante;
+* vida útil;
+* preço;
+* origem do preço;
+* localização;
+* estoque;
+* histórico de preços.
+
+---
+
+# 25. EPIs SEM CA
+
+Preservar as regras existentes no projeto.
+
+Não criar comportamento diferente no Web.
+
+Verificar na implementação Android/API quais EPIs não exigem CA.
+
+A Web deverá refletir exatamente a mesma regra.
+
+---
+
+# 26. CONTROLE DE CA
+
+Criar visualização administrativa com:
+
+```text
+ATIVO
+A VENCER
+VENCIDO
+INATIVO
+```
+
+Utilizar:
+
+* filtros;
+* cards;
+* tabela;
+* badges;
+* datas.
+
+Manter as cores semânticas do Android.
+
+---
+
+# 27. ENTREGAS
+
+O Android permanece como aplicação operacional principal para entrega.
+
+A aplicação Web deverá priorizar:
+
+* consulta;
+* histórico;
+* auditoria;
+* análise;
+* gestão administrativa.
+
+Não recriar fluxo operacional complexo de entrega no Web sem necessidade.
+
+Criar:
+
+* lista de entregas;
+* filtros;
+* detalhes;
+* funcionário;
+* usuário responsável;
+* data;
+* itens;
+* quantidades;
+* motivo;
+* assinatura;
+* status;
+* devoluções relacionadas;
+* logs.
+
+---
+
+# 28. DEVOLUÇÕES
+
+Criar tela de consulta de devoluções.
+
+Mostrar:
+
+* entrega original;
+* funcionário;
+* item;
+* quantidade;
+* motivo;
+* data;
+* usuário;
+* status.
+
+---
+
+# 29. HISTÓRICO POR FUNCIONÁRIO
+
+Criar uma visualização completa do funcionário:
+
+```text
+DADOS
+EPIs EM POSSE
+HISTÓRICO DE ENTREGAS
+DEVOLUÇÕES
+SUBSTITUIÇÕES
+SENHA/PIN
+LOGS RELACIONADOS
+```
+
+Respeitar permissões.
+
+---
+
+# 30. SENHA/PIN DO FUNCIONÁRIO
+
+Não exibir senha ou PIN.
+
+A aplicação Web poderá mostrar apenas estados como:
+
+```text
+ATIVA
+PENDENTE
+BLOQUEADA
+```
+
+Se a API oferecer operações permitidas:
+
+* redefinir;
+* desbloquear;
+* alterar status.
+
+Nunca mostrar valor original.
+
+---
+
+# 31. USUÁRIOS
+
+Para perfil autorizado, criar:
+
+* lista;
+* cadastro;
+* edição;
+* status;
+* perfil;
+* bloqueio;
+* redefinição, conforme API.
+
+---
+
+# 32. RELATÓRIOS
+
+Criar módulo de relatórios para:
+
+* funcionário;
+* setor;
+* EPI;
+* período;
+* entregas;
+* devoluções;
+* custos;
+* EPIs vencidos;
+* CA;
+* histórico.
+
+Utilizar filtros:
+
+```text
+Data inicial
+Data final
+Funcionário
+Setor
+EPI
+Status
+```
+
+---
+
+# 33. EXPORTAÇÃO
+
+Se viável apenas no Web:
+
+permitir exportar visualizações para:
+
+```text
+PDF
+CSV
+Excel
+```
+
+Somente se isso puder ser feito no novo projeto Web sem alterar API ou banco.
+
+---
+
+# 34. AUDITORIA
+
+Criar módulo administrativo de LOG_AUDITORIA.
+
+Exibir:
+
+* data;
+* hora;
+* usuário;
+* entidade;
+* registro;
+* ação;
+* detalhes;
+* origem;
+* status.
+
+Evitar duplicidade visual.
+
+Criar filtros.
+
+---
+
+# 35. HISTÓRICO DE PREÇOS
+
+Criar interface para consultar:
+
+* EPI;
+* preço;
+* vigência;
+* fornecedor;
+* origem;
+* nota fiscal;
+* histórico.
+
+Não sobrescrever histórico antigo.
+
+---
+
+# 36. CONFIGURAÇÕES
+
+Criar página de configurações contendo apenas funcionalidades suportadas pela API.
+
+Exemplos possíveis:
+
+* dados do usuário;
+* preferências visuais;
+* notificações;
+* segurança;
+* senha;
+* termos;
+* política de privacidade.
+
+Não inventar configurações sem backend.
+
+---
+
+# 37. DARK MODE
+
+Replicar o Dark Mode previsto no Android.
+
+Utilizar a mesma lógica visual.
+
+Persistir preferência do usuário localmente no navegador, se necessário.
+
+---
+
+# 38. RESPONSIVIDADE
+
+A Web deverá funcionar corretamente em:
+
+```text
+1920x1080
+1366x768
+Notebook
+Tablet
+Celular
+```
+
+Prioridade:
+
+```text
+Desktop e Notebook
+```
+
+---
+
+# 39. TABELAS
+
+As tabelas deverão possuir:
+
+* paginação;
+* pesquisa;
+* ordenação;
+* filtros;
+* cabeçalho claro;
+* badges;
+* ações;
+* responsividade.
+
+Não mostrar centenas de registros sem paginação.
+
+---
+
+# 40. FORMULÁRIOS
+
+Todos os campos obrigatórios deverão ter marcador visual.
+
+Exemplo:
+
+```text
+Nome *
+CPF *
+```
+
+Mostrar legenda:
+
+```text
+* Campos obrigatórios
+```
+
+---
+
+# 41. VALIDAÇÕES
+
+Utilizar validação no front-end para experiência do usuário.
+
+Mas considerar a API como validação definitiva.
+
+Exemplos:
+
+* CPF;
+* datas;
+* quantidade;
+* preço;
+* campos obrigatórios.
+
+---
+
+# 42. DATAS
+
+Apresentar datas na interface no padrão:
+
+```text
+dd/mm/aaaa
+```
+
+Mesmo que a API utilize:
+
+```text
+yyyy-mm-dd
+```
+
+Converter apenas na camada de apresentação.
+
+---
+
+# 43. VALORES MONETÁRIOS
+
+Apresentar:
+
+```text
+R$ 1.234,56
+```
+
+sem alterar o formato esperado pela API.
+
+---
+
+# 44. MENSAGENS
+
+Utilizar mensagens claras.
+
+Exemplo correto:
+
+```text
+Funcionário cadastrado com sucesso.
+```
+
+```text
+Não foi possível salvar o funcionário. Verifique os campos informados.
+```
+
+Evitar mensagens técnicas como:
+
+```text
+SQLSTATE...
+```
+
+---
+
+# 45. LOADING
+
+Toda chamada à API deverá apresentar feedback visual.
+
+Exemplo:
+
+```text
+Carregando...
+```
+
+Não deixar o usuário sem resposta durante requisições.
+
+---
+
+# 46. ESTADO VAZIO
+
+Para listas sem registros:
+
+não mostrar somente tabela vazia.
+
+Mostrar mensagem semelhante a:
+
+```text
+Nenhum funcionário encontrado.
+```
+
+---
+
+# 47. CONFIRMAÇÕES
+
+Ações importantes deverão possuir confirmação.
+
+Exemplos:
+
+* desativar;
+* excluir logicamente;
+* bloquear;
+* redefinir senha.
+
+Não criar confirmação para ações simples.
+
+---
+
+# 48. EXCLUSÃO
+
+Respeitar exatamente a regra existente.
+
+Não implementar DELETE físico se o Android/API utilizar exclusão lógica ou status.
+
+---
+
+# 49. BANCO ÚNICO
+
+O Android e o Web deverão refletir os mesmos dados.
+
+Exemplo:
+
+```text
+WEB cadastra funcionário
+        ↓
+API
+        ↓
+MYSQL
+        ↓
+Android consulta
+        ↓
+novo funcionário aparece
+```
+
+E:
+
+```text
+Android registra entrega
+        ↓
+API
+        ↓
+MYSQL
+        ↓
+Web atualiza consulta
+        ↓
+entrega aparece
+```
+
+---
+
+# 50. NÃO CRIAR BANCO WEB
+
+É proibido criar:
+
+```text
+db_gestao_epi_web
+```
+
+ou qualquer outro banco paralelo.
+
+Utilizar exclusivamente a arquitetura existente.
+
+---
+
+# 51. NÃO DUPLICAR DADOS
+
+Não manter cópias locais permanentes de:
+
+* funcionários;
+* EPIs;
+* entregas;
+* usuários.
+
+A fonte de verdade deve continuar sendo o backend existente.
+
+---
+
+# 52. SEGURANÇA
+
+Não salvar:
+
+```text
+senha
+PIN
+token sensível
+credenciais MySQL
+```
+
+em arquivos versionados.
+
+Não publicar:
+
+```text
+.env
+```
+
+com credenciais reais.
+
+---
+
+# 53. API BASE URL
+
+Identificar automaticamente a URL utilizada no ambiente atual.
+
+Provavelmente algo equivalente a:
+
+```text
+http://localhost/gestao_epi_api_5/
+```
+
+Mas NÃO assumir.
+
+Verificar o projeto real antes de configurar.
+
+Centralizar a URL.
+
+Exemplo:
+
+```text
+config/api.php
+```
+
+---
+
+# 54. ERROS DA API
+
+Criar tratamento centralizado para:
+
+```text
+400
+401
+403
+404
+409
+422
+500
+```
+
+Com mensagens adequadas.
+
+---
+
+# 55. 401
+
+Quando sessão/token expirar:
+
+```text
+redirecionar para Login
+```
+
+e mostrar:
+
+```text
+Sua sessão expirou. Faça login novamente.
+```
+
+---
+
+# 56. 403
+
+Quando não houver permissão:
+
+mostrar:
+
+```text
+Você não possui permissão para acessar esta funcionalidade.
+```
+
+---
+
+# 57. 409
+
+Para duplicidade:
+
+exibir mensagem de negócio retornada pela API.
+
+Exemplo:
+
+```text
+CPF já cadastrado.
+```
+
+---
+
+# 58. ARQUITETURA PARALELA
+
+A aplicação deverá ser desenhada para funcionamento simultâneo:
+
+```text
+ANDROID
+   │
+   ├─────────► API
+   │
+WEB
+   │
+   └─────────► API
+                  │
+                  ▼
+                MYSQL
+```
+
+Nenhum cliente deverá depender do outro.
+
+---
+
+# 59. NÃO CRIAR SINCRONIZAÇÃO ANDROID ↔ WEB
+
+Android e Web não devem sincronizar diretamente.
+
+Ambos devem trabalhar através da API e do mesmo banco.
+
+---
+
+# 60. CONSISTÊNCIA
+
+Quando houver diferença entre:
+
+* protótipo;
+* documentação;
+* Android real;
+* API real;
+
+priorizar nesta ordem:
+
+```text
+1. API e regras de negócio implementadas
+2. Banco existente
+3. Android funcional
+4. Documentação/protótipo
+```
+
+Não inventar comportamento apenas porque aparece em uma imagem antiga.
+
+Registrar as inconsistências encontradas.
+
+---
+
+# 61. DOCUMENTAÇÃO
+
+Criar:
+
+```text
+README.md
+```
+
+na pasta Web.
+
+Documentar:
+
+* objetivo;
+* arquitetura;
+* requisitos;
+* XAMPP;
+* PHP;
+* API;
+* URL;
+* estrutura;
+* instalação;
+* execução;
+* perfis;
+* limitações;
+* dependências.
+
+---
+
+# 62. NÃO COLOCAR DADOS SENSÍVEIS NO README
+
+Não registrar:
+
+* senhas;
+* PINs;
+* chave AES;
+* token;
+* senha MySQL;
+* dados reais dos funcionários.
+
+---
+
+# 63. DESIGN SYSTEM
+
+Criar um arquivo central de estilos/tokens.
+
+Exemplo:
+
+```text
+--color-primary: #305BD3;
+```
+
+Centralizar:
+
+* cores;
+* espaçamento;
+* border-radius;
+* sombras;
+* fontes;
+* status.
+
+---
+
+# 64. COMPONENTES REUTILIZÁVEIS
+
+Criar componentes para:
+
+* sidebar;
+* topbar;
+* card;
+* modal;
+* tabela;
+* badge;
+* botão;
+* campo de formulário;
+* mensagem;
+* loader;
+* paginação.
+
+Evitar duplicação de HTML/CSS.
+
+---
+
+# 65. TELAS MÍNIMAS
+
+Criar pelo menos:
+
+```text
+Login
+
+Dashboard
+
+Funcionários
+- Lista
+- Novo
+- Editar
+- Detalhes
+
+EPIs
+- Lista
+- Novo
+- Editar
+- Detalhes
+- Controle de CA
+
+Entregas
+- Lista
+- Detalhes
+
+Devoluções
+- Lista
+- Detalhes
+
+Relatórios
+
+Usuários
+
+Auditoria
+
+Configurações
+
+404
+
+403
+```
+
+A disponibilidade deverá respeitar perfil/API.
+
+---
+
+# 66. ACESSIBILIDADE
+
+Utilizar:
+
+* labels;
+* contraste;
+* navegação por teclado;
+* títulos;
+* aria-label quando necessário;
+* foco visível.
+
+---
+
+# 67. PERFORMANCE
+
+Evitar carregar todos os registros de uma vez.
+
+Utilizar:
+
+* paginação;
+* filtros;
+* lazy loading quando necessário;
+* cache somente quando seguro e útil.
+
+---
+
+# 68. NÃO ALTERAR O ANDROID
+
+Reforço:
+
+não modificar absolutamente nenhum arquivo em:
+
+```text
+C:\Users\Ronaldo\Documents\Antigravity\gestao_epi_5
+```
+
+---
+
+# 69. NÃO ALTERAR API
+
+Não modificar absolutamente nenhum arquivo em:
+
+```text
+C:\xampp\htdocs\gestao_epi_api_5
+```
+
+---
+
+# 70. NÃO ALTERAR BANCO
+
+Não modificar a estrutura ou os dados diretamente em:
+
+```text
+C:\xampp\mysql\data\db_gestao_epi
+```
+
+---
+
+# 71. LOCAL ÚNICO DE ESCRITA
+
+A única pasta permitida para criação ou modificação nesta tarefa é:
+
+```text
+C:\xampp\htdocs\gestao_epi-web
+```
+
+---
+
+# 72. BACKUP
+
+Como os três projetos existentes são somente leitura nesta tarefa:
+
+não realizar backup destrutivo, migração ou alteração.
+
+Apenas desenvolver a aplicação Web.
+
+---
+
+# 73. PRIMEIRA ENTREGA
+
+Antes de escrever a aplicação, apresentar um diagnóstico contendo:
+
+## Android
+
+* telas;
+* módulos;
+* identidade visual;
+* regras relevantes.
+
+## API
+
+* endpoints encontrados;
+* autenticação;
+* formato das respostas.
+
+## Banco
+
+* entidades;
+* relacionamentos relevantes.
+
+## Web
+
+* módulos que poderão ser implementados integralmente;
+* módulos que dependem de endpoints inexistentes.
+
+---
+
+# 74. SEGUNDA ENTREGA
+
+Apresentar o plano do projeto Web:
+
+```text
+Estrutura de diretórios
+Arquitetura
+Módulos
+Rotas
+Componentes
+Integração API
+Permissões
+Design
+```
+
+---
+
+# 75. TERCEIRA ETAPA
+
+Somente depois:
+
+iniciar a implementação na pasta:
+
+```text
+C:\xampp\htdocs\gestao_epi-web
+```
+
+---
+
+# 76. IMPLEMENTAÇÃO INCREMENTAL
+
+Desenvolver na seguinte ordem:
+
+```text
+1. Estrutura
+2. Configuração
+3. Login
+4. Sessão
+5. Layout
+6. Sidebar
+7. Dashboard
+8. Funcionários
+9. EPIs
+10. Entregas
+11. Devoluções
+12. Relatórios
+13. Usuários
+14. Auditoria
+15. Configurações
+16. Responsividade
+17. Dark Mode
+18. Testes
+```
+
+---
+
+# 77. TESTE DE INTEGRAÇÃO OBRIGATÓRIO
+
+Demonstrar ao final:
+
+### Cenário 1
+
+Cadastrar ou editar um registro pelo Web, quando a API permitir.
+
+Depois consultar pelo Android.
+
+### Cenário 2
+
+Registrar uma operação pelo Android.
+
+Depois consultar pelo Web.
+
+O objetivo é provar:
+
+```text
+ANDROID + WEB
+      ↓
+MESMA API
+      ↓
+MESMO BANCO
+```
+
+---
+
+# 78. TESTES DE PERMISSÃO
+
+Testar todos os perfis existentes.
+
+Garantir que um usuário não consiga acessar por URL uma tela não autorizada.
+
+---
+
+# 79. TESTES DE INTERFACE
+
+Testar pelo menos:
+
+```text
+1920x1080
+1366x768
+Tablet
+Mobile
+```
+
+---
+
+# 80. TESTES DE FORMULÁRIO
+
+Validar:
+
+* campo obrigatório;
+* formato inválido;
+* duplicidade;
+* erro da API;
+* sucesso;
+* cancelamento.
+
+---
+
+# 81. TESTE DE SESSÃO
+
+Validar:
+
+* login;
+* sessão ativa;
+* logout;
+* expiração;
+* acesso sem sessão.
+
+---
+
+# 82. TESTE DE API FORA DO AR
+
+Caso a API não esteja disponível:
+
+a aplicação Web deverá apresentar uma mensagem amigável.
+
+Exemplo:
+
+```text
+Não foi possível conectar ao servidor.
+Verifique se o Apache e a API estão em execução.
+```
+
+---
+
+# 83. AMBIENTE XAMPP
+
+Considerar:
+
+```text
+Apache
+PHP
+MySQL
+localhost
+```
+
+Não criar dependência obrigatória de servidor externo.
+
+---
+
+# 84. PÁGINA INICIAL
+
+Se não autenticado:
+
+```text
+Login
+```
+
+Se autenticado:
+
+```text
+Dashboard
+```
+
+ou tela inicial equivalente definida pela regra real.
+
+---
+
+# 85. TÍTULO DO SISTEMA
+
+Utilizar o nome oficial identificado no projeto.
+
+Manter consistência com o Android.
+
+Não criar outro nome de produto.
+
+---
+
+# 86. ÍCONES
+
+Utilizar biblioteca de ícones consistente, por exemplo:
+
+```text
+Bootstrap Icons
+Lucide
+Font Awesome
+```
+
+Escolher apenas uma principal.
+
+Não misturar várias bibliotecas sem necessidade.
+
+---
+
+# 87. MODAIS
+
+Utilizar modais para detalhes rápidos quando fizer sentido.
+
+Exemplo:
+
+* detalhes da entrega;
+* histórico;
+* confirmação.
+
+Não colocar formulários gigantes em modal.
+
+---
+
+# 88. EXPERIÊNCIA DE USO
+
+A aplicação Web deve priorizar:
+
+```text
+GESTÃO
+CADASTROS
+CONSULTAS
+RELATÓRIOS
+AUDITORIA
+ADMINISTRAÇÃO
+```
+
+O Android continua prioritariamente operacional para o processo de entrega.
+
+---
+
+# 89. INFORMAÇÕES EM TEMPO REAL
+
+Sempre que uma página for carregada ou atualizada:
+
+consultar os dados atuais através da API.
+
+Evitar valores mockados após a integração.
+
+---
+
+# 90. DADOS MOCK
+
+Mocks poderão ser usados somente na fase inicial de layout.
+
+Depois deverão ser removidos.
+
+Nenhum dado fictício deverá permanecer misturado com a API em produção local.
+
+---
+
+# 91. CÓDIGO
+
+Escrever código:
+
+* organizado;
+* comentado quando necessário;
+* legível;
+* reutilizável;
+* sem duplicações desnecessárias.
+
+---
+
+# 92. SEPARAÇÃO DE RESPONSABILIDADES
+
+Evitar arquivos PHP enormes contendo:
+
+```text
+HTML + SQL + regra de negócio + CSS + JS
+```
+
+na mesma página.
+
+Separar adequadamente responsabilidades.
+
+---
+
+# 93. NÃO CRIAR SQL DIRETO SEM NECESSIDADE
+
+Se houver endpoint:
+
+utilize-o.
+
+Somente documentar limitações se faltar endpoint.
+
+---
+
+# 94. LOGS DA APLICAÇÃO WEB
+
+Não criar logs paralelos de auditoria que concorram com o backend.
+
+Auditoria de negócio deve continuar centralizada na API.
+
+Logs técnicos locais do Web podem existir somente para diagnóstico e sem dados sensíveis.
+
+---
+
+# 95. COMPATIBILIDADE FUTURA
+
+Estruturar o Web de forma que a API possa futuramente migrar de:
+
+```text
+localhost
+```
+
+para:
+
+```text
+servidor de produção
+```
+
+alterando apenas uma configuração.
+
+---
+
+# 96. CRITÉRIO DE ACEITE
+
+Considerar a aplicação concluída somente quando:
+
+1. rodar em `localhost`;
+2. usar a API existente;
+3. utilizar o banco existente indiretamente via API;
+4. não alterar Android;
+5. não alterar API;
+6. não alterar banco;
+7. login funcionar;
+8. controle de perfil funcionar;
+9. dashboard carregar dados reais;
+10. funcionários carregar dados reais;
+11. EPIs carregar dados reais;
+12. entregas carregar dados reais;
+13. relatórios utilizarem dados reais;
+14. auditoria funcionar quando suportada;
+15. identidade visual estiver alinhada ao Android;
+16. layout for responsivo;
+17. Dark Mode funcionar se implementado;
+18. erros forem tratados;
+19. sessão funcionar;
+20. README estiver atualizado.
+
+---
+
+# 97. RELATÓRIO FINAL
+
+Ao concluir, apresentar um relatório contendo:
+
+```text
+ARQUIVOS CRIADOS
+PÁGINAS CRIADAS
+ENDPOINTS UTILIZADOS
+FUNCIONALIDADES IMPLEMENTADAS
+FUNCIONALIDADES NÃO IMPLEMENTADAS
+MOTIVO DAS LIMITAÇÕES
+TESTES REALIZADOS
+RESULTADOS
+```
+
+---
+
+# 98. VERIFICAÇÃO FINAL DE INTEGRIDADE
+
+Antes de encerrar:
+
+verifique novamente os três caminhos originais e confirme que nenhum arquivo foi alterado nesta tarefa:
+
+```text
+C:\Users\Ronaldo\Documents\Antigravity\gestao_epi_5
+```
+
+```text
+C:\xampp\htdocs\gestao_epi_api_5
+```
+
+```text
+C:\xampp\mysql\data\db_gestao_epi
+```
+
+Todas as alterações devem existir somente em:
+
+```text
+C:\xampp\htdocs\gestao_epi-web
+```
+
+---
+
+# 99. COMPORTAMENTO DIANTE DE ENDPOINT AUSENTE
+
+Se durante o desenvolvimento for identificado que uma funcionalidade prevista para o Web depende de endpoint inexistente:
+
+NÃO altere a API.
+
+Crie um relatório semelhante a:
+
+```text
+FUNCIONALIDADE:
+Importação de Funcionários
+
+NECESSIDADE:
+POST /funcionarios/importar
+
+SITUAÇÃO:
+Endpoint não localizado na API atual.
+
+IMPACTO:
+Tela poderá ser construída, mas não deverá ser considerada funcional.
+
+AÇÃO RECOMENDADA:
+Criar endpoint posteriormente, mediante autorização.
+```
+
+---
+
+# 100. ORDEM OBRIGATÓRIA DE EXECUÇÃO
+
+Execute exatamente desta forma:
+
+```text
+ETAPA 1
+Analisar Android, API e banco.
+
+ETAPA 2
+Apresentar diagnóstico.
+
+ETAPA 3
+Mapear Android ↔ API ↔ Banco ↔ Web.
+
+ETAPA 4
+Apresentar arquitetura proposta do Web.
+
+ETAPA 5
+Criar estrutura dentro de gestao_epi-web.
+
+ETAPA 6
+Implementar Login e integração.
+
+ETAPA 7
+Implementar módulos administrativos.
+
+ETAPA 8
+Aplicar identidade visual.
+
+ETAPA 9
+Implementar permissões.
+
+ETAPA 10
+Executar testes.
+
+ETAPA 11
+Validar integração simultânea Android/Web.
+
+ETAPA 12
+Gerar README e relatório final.
+```
+
+**Não faça alterações nos projetos existentes. Use-os exclusivamente como referência técnica e fonte de integração para desenvolver a nova aplicação Web em `C:\xampp\htdocs\gestao_epi-web`.**

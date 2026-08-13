@@ -1,0 +1,42 @@
+<?php
+declare(strict_types=1);
+
+require_once __DIR__ . '/services/ApiService.php';
+
+use Services\ApiService;
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+try {
+    // Se o usuário possui sessão ativa, tenta informar a API para invalidar o token JWT
+    if (isset($_SESSION['token']) && $_SESSION['token'] !== '') {
+        $api = new ApiService();
+        $api->post('auth/logout', []);
+    }
+} catch (\Throwable $e) {
+    // Silencia qualquer falha de rede ao deslogar para garantir que o logout local ocorra
+}
+
+// Limpa todas as variáveis de sessão
+$_SESSION = [];
+
+// Se desejar destruir o cookie de sessão, faça-o
+if (ini_get("session.use_cookies")) {
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
+}
+
+// Destrói a sessão
+session_destroy();
+
+// Inicia uma nova sessão apenas para gravar a mensagem de logout com segurança
+session_start();
+$_SESSION['success_message'] = 'Você foi desconectado com sucesso.';
+
+header('Location: login.php');
+exit;
