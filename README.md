@@ -91,3 +91,24 @@ Utilize as contas homologadas abaixo para testar os diferentes fluxos operaciona
 | **Almoxarife** | `almoxarife1` | `almox123` | Dashboard (sem custos), Funcionários, EPIs (Apenas Leitura), Entregas e Devoluções. |
 | **Gestor** | `gestor_contrato` | `gestor123` | Dashboard (com custos), Funcionários (Leitura), EPIs (Leitura), Entregas e Relatórios de Custos. |
 | **RH Administrativo** | `rh_admin` | `rh123` | Funcionários (CRUD Completo) e Configurações (exclusão de módulos de estoque). |
+
+---
+
+## 5. HISTÓRICO DE MELHORIAS RECENTES E RESILIÊNCIA (13/08/2026)
+
+Recentemente, foram aplicadas as seguintes atualizações estruturais para aumentar a conformidade e estabilidade do painel Web-PHP:
+
+1. **Gateway de Proxy contra Bloqueio de CORS:**
+   * Desenvolvido o script [api_proxy.php](file:///C:/xampp/htdocs/gestao_epi-web/pages/api_proxy.php) atuando como ponte dinâmica Server-to-Server. Isso eliminou as rejeições de Preflight CORS no navegador do usuário.
+2. **Conformidade com a LGPD (Mascaramento de CPF/eSocial):**
+   * Mascaramento preventivo de dados sensíveis na listagem e ficha de [funcionarios.php](file:///C:/xampp/htdocs/gestao_epi-web/pages/funcionarios.php) e no dropdown de filtros em [relatorios.php](file:///C:/xampp/htdocs/gestao_epi-web/pages/relatorios.php).
+3. **Resiliência cURL (Retry com Backoff contra Erros 502/Sleep):**
+   * Configurada uma política de retry automático com até 3 tentativas adicionais (com delay de 3s) no client [ApiService.php](file:///C:/xampp/htdocs/gestao_epi-web/services/ApiService.php). Isso mitigou o erro `502 Bad Gateway` gerado durante o tempo de boot (aquecimento) do plano gratuito da API na Render.
+4. **Blindagem e Correção do CRUD de Operadores:**
+   * Padronizado todo o fluxo de situação de `usu_situacao` para `usu_status` em [usuarios.php](file:///C:/xampp/htdocs/gestao_epi-web/pages/usuarios.php) alinhando-se com a API do backend e com o Android, eliminando erros fatais do PHP.
+   * Corrigido o envio de troca de senha forçada para utilizar o parâmetro `senha_temporaria` exigido pela API.
+5. **Correção de Inconsistências de Mapeamento em Relatórios:**
+   * **Relatório Individual:** Criado fallback para capturar o nome do colaborador a partir do objeto pai da API (`res.data.funcionario.fun_nome`), resolvendo o bug do "Colaborador Não Informado".
+   * **EPIs Vencidos em Posse:** Reestruturado o layout da tabela e do CSV para refletir as propriedades reais retornadas pela API (EPI, Fabricante, C.A., Vencimento C.A., Vida Útil e Status), limpando colunas undefined.
+   * **Validade de C.A.:** Adicionado tratamento defensivo para a chave de valor do EPI (`epi_valor`) para exibir de forma amigável `'---'` em vez de `NaN`.
+
