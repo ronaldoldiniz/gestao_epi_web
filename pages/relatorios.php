@@ -219,7 +219,14 @@ function gerarRelatorioEntregas() {
     .then(res => res.json())
     .then(res => {
         if (res.success && res.data) {
-            dadosAtivos = res.data;
+            let listaEntregas = [];
+            if (Array.isArray(res.data)) {
+                listaEntregas = res.data;
+            } else if (res.data && Array.isArray(res.data.entregas)) {
+                listaEntregas = res.data.entregas;
+            }
+
+            dadosAtivos = listaEntregas;
             colunasAtivas = ['Data', 'Colaborador', 'EPI', 'C.A.', 'Quantidade', 'Motivo', 'Responsável'];
             
             let html = `
@@ -238,7 +245,7 @@ function gerarRelatorioEntregas() {
                     <tbody>
             `;
 
-            res.data.forEach(row => {
+            listaEntregas.forEach(row => {
                 const dataFormat = new Date(row.entr_data_entrega).toLocaleDateString('pt-BR');
                 const itens = row.itens || [];
                 itens.forEach(item => {
