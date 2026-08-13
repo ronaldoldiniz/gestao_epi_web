@@ -391,14 +391,13 @@ function gerarRelatorioCustos() {
     .then(res => {
         if (res.success && res.data) {
             dadosAtivos = res.data;
-            colunasAtivas = ['Ano / Mês', 'Departamento (Centro Custo)', 'Total Unidades Fornecidas', 'Custo Total'];
+            colunasAtivas = ['Ano / Mês', 'Total Unidades Fornecidas', 'Custo Total'];
             
             let html = `
                 <table class="table table-striped border align-middle" id="tabela-relatorio-gerado" style="font-size: 13px;">
                     <thead class="table-light">
                         <tr>
                             <th>Ano / Mês</th>
-                            <th>Departamento (Centro Custo)</th>
                             <th class="text-center">Quantidade Entregue</th>
                             <th class="text-end">Valor Total de Consumo</th>
                         </tr>
@@ -410,9 +409,8 @@ function gerarRelatorioCustos() {
                 const valorFloat = parseFloat(row.custo_total);
                 html += `
                     <tr>
-                        <td class="fw-bold">${row.ano_mes}</td>
-                        <td class="fw-semibold">${row.fun_departamento || 'Não Informado'}</td>
-                        <td class="text-center">${row.total_unidades}</td>
+                        <td class="fw-bold">${row.mes}</td>
+                        <td class="text-center">${row.total_itens_entregues}</td>
                         <td class="text-end fw-bold text-success">${valorFloat.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
                     </tr>
                 `;
@@ -507,9 +505,8 @@ function exportarCSV() {
                 ];
             } else if (relatorioAtivo === 'custos') {
                 linha = [
-                    row.ano_mes,
-                    row.fun_departamento,
-                    row.total_unidades,
+                    row.mes,
+                    row.total_itens_entregues,
                     row.custo_total.toString().replace('.', ',')
                 ];
             }
