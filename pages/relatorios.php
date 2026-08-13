@@ -71,8 +71,13 @@ $podeVerCustos = in_array($userProfile, ['ADMINISTRADOR', 'GESTOR'], true);
                             <label class="form-label" style="font-size:12px;">Filtrar por Colaborador</label>
                             <select id="entregas-func-id" class="form-select">
                                 <option value="">Todos os Funcionários</option>
-                                <?php foreach ($funcionarios as $f): ?>
-                                    <option value="<?= $f['fun_id'] ?>"><?= htmlspecialchars($f['fun_nome']) ?> (CPF: <?= htmlspecialchars($f['fun_cpf']) ?>)</option>
+                                <?php foreach ($funcionarios as $f): 
+                                    $cpfMasc = $f['fun_cpf'];
+                                    if (strlen($cpfMasc) === 11) {
+                                        $cpfMasc = substr($cpfMasc, 0, 3) . '.***.***-' . substr($cpfMasc, 9, 2);
+                                    }
+                                ?>
+                                    <option value="<?= $f['fun_id'] ?>"><?= htmlspecialchars($f['fun_nome']) ?> (CPF: <?= htmlspecialchars($cpfMasc) ?>)</option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -165,8 +170,7 @@ $podeVerCustos = in_array($userProfile, ['ADMINISTRADOR', 'GESTOR'], true);
 
 <!-- ================= JAVASCRIPT ================= -->
 <script>
-const API_TOKEN = '<?= $_SESSION['token'] ?>';
-const API_BASE_URL = 'https://gestao-epi-api.onrender.com/';
+const PROXY_URL = 'api_proxy.php';
 
 let relatorioAtivo = 'entregas';
 let dadosAtivos = []; // Cache dos dados carregados
@@ -211,9 +215,7 @@ function gerarRelatorioEntregas() {
 
     exibirLoading();
 
-    fetch(`${API_BASE_URL}${endpoint}`, {
-        headers: { 'Authorization': `Bearer ${API_TOKEN}`, 'Accept': 'application/json' }
-    })
+    fetch(`${PROXY_URL}?route=${endpoint}`)
     .then(res => res.json())
     .then(res => {
         if (res.success && res.data) {
@@ -267,9 +269,7 @@ function gerarRelatorioEpisVencidos() {
     filtrosAtivosString = 'Filtro: EPIs vencidos em posse dos colaboradores';
     exibirLoading();
 
-    fetch(`${API_BASE_URL}relatorios/epis-vencidos`, {
-        headers: { 'Authorization': `Bearer ${API_TOKEN}`, 'Accept': 'application/json' }
-    })
+    fetch(`${PROXY_URL}?route=relatorios/epis-vencidos`)
     .then(res => res.json())
     .then(res => {
         if (res.success && res.data) {
@@ -323,9 +323,7 @@ function gerarRelatorioCaVencidos() {
     filtrosAtivosString = 'Filtro: EPIs com Certificado de Aprovação vencidos';
     exibirLoading();
 
-    fetch(`${API_BASE_URL}relatorios/ca-vencidos`, {
-        headers: { 'Authorization': `Bearer ${API_TOKEN}`, 'Accept': 'application/json' }
-    })
+    fetch(`${PROXY_URL}?route=relatorios/ca-vencidos`)
     .then(res => res.json())
     .then(res => {
         if (res.success && res.data) {
@@ -378,9 +376,7 @@ function gerarRelatorioCustos() {
     filtrosAtivosString = 'Filtro: Demonstrativo mensal de custos corporativos';
     exibirLoading();
 
-    fetch(`${API_BASE_URL}relatorios/custo-mensal`, {
-        headers: { 'Authorization': `Bearer ${API_TOKEN}`, 'Accept': 'application/json' }
-    })
+    fetch(`${PROXY_URL}?route=relatorios/custo-mensal`)
     .then(res => res.json())
     .then(res => {
         if (res.success && res.data) {
@@ -547,12 +543,10 @@ function registrarExportacaoAuditoria(formato) {
         filtros: `${filtrosAtivosString} — Formato: ${formato}`
     };
 
-    fetch(`${API_BASE_URL}logs/registrar-exportacao`, {
+    fetch(`${PROXY_URL}?route=logs/registrar-exportacao`, {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${API_TOKEN}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
     })

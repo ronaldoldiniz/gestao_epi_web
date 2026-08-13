@@ -848,8 +848,8 @@ function verDetalhes(funId) {
     const modal = new bootstrap.Modal(document.getElementById('modalDetalhes'));
     modal.show();
 
-    // 1. Puxa dados do Funcionário via Proxy
-    fetch(`${PROXY_URL}?acao=funcionario&id=${funId}`)
+    // 1. Puxa dados do Funcionário via Proxy Genérico
+    fetch(`${PROXY_URL}?route=funcionarios/${funId}`)
         .then(res => res.json())
         .then(res => {
             if (res.success && res.data) {
@@ -887,7 +887,7 @@ function consultarAssinatura(funId) {
     const pinBadge = document.getElementById('det-pin-status');
     const areaAcoes = document.getElementById('area-acoes-pin');
     
-    fetch(`${PROXY_URL}?acao=assinatura&id=${funId}`)
+    fetch(`${PROXY_URL}?route=assinaturas/funcionario/${funId}`)
         .then(res => res.json())
         .then(res => {
             if (res.success && res.data) {
@@ -929,7 +929,7 @@ function consultarEntregas(funId) {
     const listEntregas = document.getElementById('lista-det-entregas');
     const listDevolucoes = document.getElementById('lista-det-devolucoes');
 
-    fetch(`${PROXY_URL}?acao=entregas&id=${funId}`)
+    fetch(`${PROXY_URL}?route=entregas/funcionario/${funId}`)
         .then(res => res.json())
         .then(res => {
             if (res.success && res.data) {

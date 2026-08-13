@@ -2,10 +2,11 @@
 declare(strict_types=1);
 
 /**
- * Proxy Server-Side para chamadas da API REST na nuvem.
+ * Proxy Server-Side dinâmico para chamadas à API REST na nuvem.
  * 
- * Evita bloqueios de CORS Preflight (OPTIONS) no navegador do usuário realizando
- * as requisições de forma direta de servidor para servidor via cURL PHP.
+ * Intercepta todas as chamadas client-side (GET, POST, PUT, DELETE) e as repassa
+ * de servidor para servidor via cURL no PHP, eliminando os problemas de CORS
+ * de forma transparente e escalável.
  */
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -24,39 +25,30 @@ if (!isset($_SESSION['token']) || $_SESSION['token'] === '') {
 require_once __DIR__ . '/../services/ApiService.php';
 use Services\ApiService;
 
-$acao = $_GET['acao'] ?? '';
-$id = (int)($_GET['id'] ?? 0);
-
-if ($id <= 0) {
+// Captura a rota da API que queremos chamar
+$route = $_GET['route'] ?? '';
+if ($route === '') {
     http_response_code(400);
-    echo json_encode(['success' => false, 'message' => 'ID inválido ou ausente.']);
+    echo json_encode(['success' => false, 'message' => 'Rota de destino do proxy ausente.']);
     exit;
 }
 
 try {
     $api = new ApiService();
+    $method = $_SERVER['REQUEST_METHOD'];
 
-    switch ($acao) {
-        case 'funcionario':
-            $res = $api->get("funcionarios/{$id}");
-            echo json_encode($res);
-            break;
-            
-        case 'assinatura':
-            $res = $api->get("assinaturas/funcionario/{$id}");
-            echo json_encode($res);
-            break;
-            
-        case 'entregas':
-            $res = $api->get("entregas/funcionario/{$id}");
-            echo json_encode($res);
-            break;
-            
-        default:
-            http_response_code(400);
-            echo json_encode(['success' => false, 'message' => 'Ação do proxy não suportada.']);
-            break;
+    // Captura o payload de entrada em caso de POST/PUT
+    $data = null;
+    if (in_array(strtoupper($method), ['POST', 'PUT', 'PATCH'], true)) {
+        $body = file_get_contents('php://input');
+        if (!empty($body)) {
+            $data = json_decode($body, true);
+        }
     }
+
+    // Repassa a requisição dinamicamente para a API
+    $res = $api->request($method, $route, $data);
+    echo json_encode($res);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(['success' => false, 'message' => 'Erro no processamento do proxy: ' . $e->getMessage()]);
