@@ -287,18 +287,17 @@ function gerarRelatorioEpisVencidos() {
     .then(res => {
         if (res.success && res.data) {
             dadosAtivos = res.data;
-            colunasAtivas = ['Colaborador', 'EPI', 'C.A.', 'Data Entrega', 'Dias de Uso', 'Dias Recomendados', 'Status'];
+            colunasAtivas = ['EPI', 'Fabricante', 'C.A.', 'Vencimento C.A.', 'Vida Útil Recomendada', 'Status'];
             
             let html = `
                 <table class="table table-striped border align-middle" id="tabela-relatorio-gerado" style="font-size: 13px;">
                     <thead class="table-light">
                         <tr>
-                            <th>Colaborador</th>
                             <th>EPI</th>
+                            <th>Fabricante</th>
                             <th>C.A.</th>
-                            <th>Data Entrega</th>
-                            <th>Dias em Uso</th>
-                            <th>Prazo Recomendado</th>
+                            <th>Vencimento do C.A.</th>
+                            <th>Vida Útil Recomendada</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -306,16 +305,15 @@ function gerarRelatorioEpisVencidos() {
             `;
 
             res.data.forEach(row => {
-                const dataFormat = new Date(row.data_entrega).toLocaleDateString('pt-BR');
+                const dataFormat = new Date(row.epi_vencimento_ca).toLocaleDateString('pt-BR');
                 html += `
                     <tr>
-                        <td class="fw-semibold">${row.fun_nome}</td>
                         <td class="fw-semibold">${row.epi_nome}</td>
-                        <td>${row.epi_ca || 'Isento'}</td>
-                        <td>${dataFormat}</td>
-                        <td class="fw-bold text-danger">${row.dias_em_uso}</td>
-                        <td>${row.validade_uso_dias} dias</td>
-                        <td><span class="status-badge vencido">VENCIDO</span></td>
+                        <td>${row.epi_fabricante || '---'}</td>
+                        <td class="fw-bold">${row.epi_ca || 'Isento'}</td>
+                        <td class="text-danger fw-semibold">${dataFormat}</td>
+                        <td>${row.epi_validade_uso_dias || 0} dias</td>
+                        <td><span class="status-badge vencido">${row.epi_status}</span></td>
                     </tr>
                 `;
             });
@@ -489,13 +487,12 @@ function exportarCSV() {
             let linha = [];
             if (relatorioAtivo === 'epis-vencidos') {
                 linha = [
-                    row.fun_nome,
                     row.epi_nome,
+                    row.epi_fabricante || '---',
                     row.epi_ca || 'Isento',
-                    new Date(row.data_entrega).toLocaleDateString('pt-BR'),
-                    row.dias_em_uso,
-                    row.validade_uso_dias,
-                    'VENCIDO'
+                    new Date(row.epi_vencimento_ca).toLocaleDateString('pt-BR'),
+                    row.epi_validade_uso_dias || 0,
+                    row.epi_status
                 ];
             } else if (relatorioAtivo === 'ca-vencidos') {
                 linha = [
