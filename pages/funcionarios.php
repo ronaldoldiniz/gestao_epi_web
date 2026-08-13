@@ -730,8 +730,7 @@ $podeGerenciarPin = in_array($userProfile, ['ADMINISTRADOR', 'RH_ADMINISTRATIVO'
 
 <!-- ================= JAVASCRIPT ================= -->
 <script>
-const API_TOKEN = '<?= $_SESSION['token'] ?>';
-const API_BASE_URL = 'https://gestao-epi-api.onrender.com/';
+const PROXY_URL = 'api_proxy.php';
 
 document.addEventListener('DOMContentLoaded', function() {
     initBuscaEFiltros();
@@ -805,10 +804,6 @@ function confirmarExclusao(id, nome) {
  * Puxa os dados consolidados do funcionário de forma assíncrona da API (AJAX)
  */
 function verDetalhes(funId) {
-    const headers = {
-        'Authorization': `Bearer ${API_TOKEN}`,
-        'Accept': 'application/json'
-    };
 
     // Abre modal de loading fictício ou preenche com "Carregando..."
     document.getElementById('det-nome').innerText = 'Carregando...';
@@ -833,8 +828,8 @@ function verDetalhes(funId) {
     const modal = new bootstrap.Modal(document.getElementById('modalDetalhes'));
     modal.show();
 
-    // 1. Puxa dados do Funcionário
-    fetch(`${API_BASE_URL}funcionarios/${funId}`, { headers })
+    // 1. Puxa dados do Funcionário via Proxy
+    fetch(`${PROXY_URL}?acao=funcionario&id=${funId}`)
         .then(res => res.json())
         .then(res => {
             if (res.success && res.data) {
@@ -857,10 +852,10 @@ function verDetalhes(funId) {
                 badge.innerText = situacao;
 
                 // 2. Consulta assinatura eletrônica do funcionário
-                consultarAssinatura(funId, headers);
+                consultarAssinatura(funId);
                 
                 // 3. Consulta histórico de entregas
-                consultarEntregas(funId, headers);
+                consultarEntregas(funId);
             }
         })
         .catch(err => {
@@ -868,11 +863,11 @@ function verDetalhes(funId) {
         });
 }
 
-function consultarAssinatura(funId, headers) {
+function consultarAssinatura(funId) {
     const pinBadge = document.getElementById('det-pin-status');
     const areaAcoes = document.getElementById('area-acoes-pin');
     
-    fetch(`${API_BASE_URL}assinaturas/funcionario/${funId}`, { headers })
+    fetch(`${PROXY_URL}?acao=assinatura&id=${funId}`)
         .then(res => res.json())
         .then(res => {
             if (res.success && res.data) {
@@ -910,11 +905,11 @@ function consultarAssinatura(funId, headers) {
         });
 }
 
-function consultarEntregas(funId, headers) {
+function consultarEntregas(funId) {
     const listEntregas = document.getElementById('lista-det-entregas');
     const listDevolucoes = document.getElementById('lista-det-devolucoes');
 
-    fetch(`${API_BASE_URL}entregas/funcionario/${funId}`, { headers })
+    fetch(`${PROXY_URL}?acao=entregas&id=${funId}`)
         .then(res => res.json())
         .then(res => {
             if (res.success && res.data) {
