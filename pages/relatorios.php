@@ -358,14 +358,15 @@ function gerarRelatorioCaVencidos() {
 
             res.data.forEach(row => {
                 const dataFormat = new Date(row.epi_vencimento_ca).toLocaleDateString('pt-BR');
-                const valorFloat = parseFloat(row.epi_valor);
+                const valorFloat = row.epi_valor ? parseFloat(row.epi_valor) : null;
+                const valorFormatado = (valorFloat !== null && !isNaN(valorFloat)) ? valorFloat.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '---';
                 html += `
                     <tr>
                         <td class="fw-semibold">${row.epi_nome}</td>
                         <td>${row.epi_fabricante}</td>
                         <td class="fw-bold">${row.epi_ca}</td>
                         <td class="text-danger fw-semibold">${dataFormat}</td>
-                        <td>${valorFloat.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</td>
+                        <td>${valorFormatado}</td>
                         <td><span class="status-badge vencido">${row.epi_status}</span></td>
                     </tr>
                 `;
@@ -500,7 +501,7 @@ function exportarCSV() {
                     row.epi_fabricante,
                     row.epi_ca,
                     new Date(row.epi_vencimento_ca).toLocaleDateString('pt-BR'),
-                    row.epi_valor.toString().replace('.', ','),
+                    row.epi_valor ? row.epi_valor.toString().replace('.', ',') : '---',
                     row.epi_status
                 ];
             } else if (relatorioAtivo === 'custos') {
