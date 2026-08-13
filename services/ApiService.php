@@ -25,86 +25,107 @@ class ApiService {
     }
 
     /**
-     * Executa uma requisição HTTP via cURL à API REST
+     * Executa uma requisição HTTP via cURL à API REST com política de Retry automática
      */
     public function request(string $method, string $endpoint, ?array $data = null): array {
-        $url = $this->baseUrl . ltrim($endpoint, '/');
-        $ch = curl_init($url);
+        $maxRetries = 3;
+        $retryDelay = 3; // segundos
+        $attempt = 0;
 
-        if ($ch === false) {
-            return [
-                'success' => false,
-                'message' => 'Não foi possível inicializar a conexão com a API.',
-                'data' => null,
-                'status_code' => 500
+        while ($attempt <= $maxRetries) {
+            $url = $this->baseUrl . ltrim($endpoint, '/');
+            $ch = curl_init($url);
+
+            if ($ch === false) {
+                return [
+                    'success' => false,
+                    'message' => 'Não foi possível inicializar a conexão com a API.',
+                    'data' => null,
+                    'status_code' => 500
+                ];
+            }
+
+            $headers = [
+                'Content-Type: application/json',
+                'Accept: application/json'
             ];
-        }
 
-        $headers = [
-            'Content-Type: application/json',
-            'Accept: application/json'
-        ];
+            // Injeta automaticamente o token JWT da sessão se o usuário estiver logado
+            if (isset($_SESSION['token']) && $_SESSION['token'] !== '') {
+                $headers[] = 'Authorization: Bearer ' . $_SESSION['token'];
+            }
 
-        // Injeta automaticamente o token JWT da sessão se o usuário estiver logado
-        if (isset($_SESSION['token']) && $_SESSION['token'] !== '') {
-            $headers[] = 'Authorization: Bearer ' . $_SESSION['token'];
-        }
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15); // Timeout de 15 segundos
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Evita problemas de SSL em localhost/Render de teste
+            curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, strtoupper($method));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15); // Timeout de 15 segundos
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Evita problemas de SSL em localhost/Render de teste
-        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36');
+            if ($data !== null && in_array(strtoupper($method), ['POST', 'PUT', 'PATCH'], true)) {
+                $jsonData = json_encode($data);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
+            }
 
-        if ($data !== null && in_array(strtoupper($method), ['POST', 'PUT', 'PATCH'], true)) {
-            $jsonData = json_encode($data);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData);
-        }
+            $response = curl_exec($ch);
+            $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
 
-        $response = curl_exec($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
+            // Condições para realizar o retry (erro de conexão/timeout ou erro de gateway temporário)
+            $isNetworkError = ($response === false);
+            $isGatewayError = in_array($statusCode, [502, 503, 504], true);
 
-        if ($response === false) {
-            return [
-                'success' => false,
-                'message' => 'Não foi possível conectar ao servidor de API remoto. Verifique se o Apache e a API estão online. Detalhes: ' . $error,
-                'data' => null,
-                'status_code' => 0
-            ];
-        }
+            if (($isNetworkError || $isGatewayError) && $attempt < $maxRetries) {
+                $attempt++;
+                sleep($retryDelay);
+                continue;
+            }
 
-        $decodedData = json_decode($response, true);
-        
-        // Se a resposta não for um JSON válido
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            return [
-                'success' => false,
-                'message' => 'A API retornou uma resposta em formato inválido. Contate o administrador.',
-                'data' => null,
-                'status_code' => $statusCode,
-                'raw_response' => $response
-            ];
-        }
+            if ($response === false) {
+                return [
+                    'success' => false,
+                    'message' => 'Não foi possível conectar ao servidor de API remoto. Verifique se o Apache e a API estão online. Detalhes: ' . $error,
+                    'data' => null,
+                    'status_code' => 0
+                ];
+            }
 
-        // Adiciona o status code HTTP retornado na resposta para facilitar checagens
-        $decodedData['status_code'] = $statusCode;
-
-        // Tratamento centralizado para sessões expiradas (401)
-        if ($statusCode === 401 && $endpoint !== 'auth/login') {
-            // Limpa dados de sessão
-            unset($_SESSION['token']);
-            unset($_SESSION['usuario']);
+            $decodedData = json_decode($response, true);
             
-            // Redireciona para o login
-            $_SESSION['error_message'] = 'Sua sessão expirou ou o acesso é inválido. Por favor, faça login novamente.';
-            header('Location: ' . $this->appRoot . 'login.php');
-            exit;
+            // Se a resposta não for um JSON válido (retornou HTML de erro persistente)
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                return [
+                    'success' => false,
+                    'message' => 'A API retornou uma resposta em formato inválido. Contate o administrador.',
+                    'data' => null,
+                    'status_code' => $statusCode,
+                    'raw_response' => $response
+                ];
+            }
+
+            // Adiciona o status code HTTP retornado na resposta para facilitar checagens
+            $decodedData['status_code'] = $statusCode;
+
+            // Tratamento centralizado para sessões expiradas (401)
+            if ($statusCode === 401 && $endpoint !== 'auth/login') {
+                unset($_SESSION['token']);
+                unset($_SESSION['usuario']);
+                
+                $_SESSION['error_message'] = 'Sua sessão expirou ou o acesso é inválido. Por favor, faça login novamente.';
+                header('Location: ' . $this->appRoot . 'login.php');
+                exit;
+            }
+
+            return $decodedData;
         }
 
-        return $decodedData;
+        return [
+            'success' => false,
+            'message' => 'Falha de comunicação persistente com o servidor de API.',
+            'data' => null,
+            'status_code' => 502
+        ];
     }
 
     public function get(string $endpoint): array {
